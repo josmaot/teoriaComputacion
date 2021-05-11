@@ -634,12 +634,18 @@ public class CGramatic {
                                         if (MODULE()) {
                                             posicion++;
                                             if (arrCadena[posicion + 1] == '#') {
-                                                posicion++;
-                                                INCLUDE();
-                                                return true;
+                                                if(arrCadena[posicion] == ';'){
+                                                    posicion++;
+                                                    INCLUDE();
+                                                    return true;
+                                                }else
+                                                    return false;
+                                                
                                             } else {
-                                                posicion++;
-                                                return true;
+                                                if(arrCadena[posicion] == ';'){
+                                                    posicion++;
+                                                    return true;
+                                                }
                                             }
                                         }
                                     }
