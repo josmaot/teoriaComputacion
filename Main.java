@@ -8,38 +8,44 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
-/**
- * @author jmola
- */
 public class Main {
 
-    /*      VARIABLE-> TIPO_DATO SEPARADOR CADENA ; | TIPO_DATO SEPARADOR CADENA = VALOR ;
-            TIPO_DATO-> char | int | short | long
-            SEPARADOR-> " " SEPARADOR | \t SEPARADOR | \n SEPARADOR | EMPTY
-            CADENA-> CARACTER CADENA | CARACTER
-            CARACTER-> a | b | c | ... | z
-            VALOR-> null | false | true | "CADENA" | NUMERO
-            NUMERO-> -DIGITOS FRACCION | DIGITOS FRACCION
-            FRACCION-> .DIGITOS | EMPTY}
-     */
+    /*
+    PENDIENTE:
     
+    S->CONTENIDO
+    CONTENIDO->INCLUDE SEPARADOR DEFINITION SEPARADOR METODOS
+    INCLUDE-> #include MODULE | #include MODULE SEPARADOR INCLUDE | EMPTY
+    MODULE-> < MODULE_NOMBRE >
+    MODULE_NOMBRE-> CADENA .h
+    DEFINITION-> METODO_ENCABEZADO FIN_INSTRUCCION
+    METODO_ENCABEZADO-> TYPE SEPARADOR METODO_NOMBRE ARGS
+    METODO_NOMBRE-> CADENA
+    FIN_INSTRUCCION-> ;
+    ARGS-> ( ARG ) | ()
+    ARG-> VARIABLE | VARIABLE COMA ARG
+    COMA-> ,
+    METODOS-> METODO | EMPTY
+    METODO-> METODO_ENCABEZADO { CODIGO }
+    CODIGO-> VARIABLE CODIGO | ESTRUCTURA_IF CODIGO | INSTRUCCION CODIGO | EMPTY
+    ESTRUCTURA_IF->IF(CONDICION) { CODIGO } | IF(CONDICION) { CODIGO } ELSE { CODIGO }
+    CONDICION->CADENA COMPARADOR CADENA
+    COMPARADOR-> < | > | <= | >= | != | ==
+    INSTRUCCION-> ASIGNAR_VALOR | LLAMAR_METODO
+    ASIGNAR_VALOR-> CADENA = VALOR FIN_INSTRUCCION
+    LLAMAR_METODO-> CADENA();
+     */
     public static void main(String args[]) {
+        // Inicializar y pedir cadena a evaluar
+        String cadena = "123";
+        CGramatic gram = new CGramatic();
+        gram.setCadena(cadena);
+        System.out.println("Cadena a evaluar: " + gram.getCadena());
 
-        CGramatic gramC = new CGramatic();
-        
-        String cadenaDigito = "134234982";
-        String cadenaString = "ABC";
-        
-        gramC.setCadena(cadenaDigito);
-        String estatusDigito = gramC.getStatusDigito();
-        System.out.println("Tu cadena de digitos es: " + estatusDigito);
-        
-        gramC = new CGramatic();
-        
-        gramC.setCadena(cadenaString);
-        String estatusCadena = gramC.getStatusCadena();
-        System.out.println("Tu cadena String es: " + estatusCadena);
-        
-        
+        // Evaluar gramatica
+        boolean res = gram.NUMERO();
+
+        // Imprimir resultado
+        System.out.println("Tu cadena es: " + gram.getStatusCadena(res));
     }
 }
