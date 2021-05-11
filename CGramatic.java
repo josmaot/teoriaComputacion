@@ -559,6 +559,100 @@ public class CGramatic {
 
         return false;
     }
+      //MODULE_NOMBRE-> CADENA .h
+    public boolean MODULE_NOMBRE() {
+
+        String[] libs = {"assert\0", "complex\0", "ctype\0", "errno\0", "fenv\0", "float\0",
+            "inttypes\0", "iso646\0", "limits\0", "locale\0", "math\0", "setjmp\0",
+            "signal\0", "starg\0", "stdbool\0", "stdint\0", "stddef\0", "stdio\0",
+            "stdlib\0", "string\0", "tgmath\0", "time\0", "wchar\0", "wctype\0"};
+        int entro = 0;
+
+        for (String lib : libs) {
+            for (char letra : lib.toCharArray()) {
+                if (letra == '\0') {
+                    return true;
+                }
+                if (letra == arrCadena[posicion]) {
+                    entro++;
+                    posicion++;
+                } else {
+                    if (entro > 0) {
+                        posicion = posicion - entro;
+                        entro = 0;
+                    }
+                    break;
+                }
+            }
+
+        }
+
+        return false;
+    }
+    
+    //MODULE-> < MODULE_NOMBRE.h >
+    public boolean MODULE() {
+
+        if (arrCadena[posicion] == '<') {
+            posicion++;
+            if (MODULE_NOMBRE()) {
+                if (arrCadena[posicion] == '.') {
+                    posicion++;
+                    if (arrCadena[posicion] == 'h') {
+                        posicion++;
+                        if (arrCadena[posicion] == '>') {
+                            return true;
+                        }
+                    }
+                }
+
+            }
+        }
+
+        return false;
+
+    }
+    //INCLUDE-> #include MODULE | #include MODULE SEPARADOR INCLUDE | EMPTY
+    public boolean INCLUDE() {
+
+        if (arrCadena[posicion] == '#') {
+            posicion++;
+            if (arrCadena[posicion] == 'i') {
+                posicion++;
+                if (arrCadena[posicion] == 'n') {
+                    posicion++;
+                    if (arrCadena[posicion] == 'c') {
+                        posicion++;
+                        if (arrCadena[posicion] == 'l') {
+                            posicion++;
+                            if (arrCadena[posicion] == 'u') {
+                                posicion++;
+                                if (arrCadena[posicion] == 'd') {
+                                    posicion++;
+                                    if (arrCadena[posicion] == 'e') {
+                                        posicion++;
+                                        if (MODULE()) {
+                                            posicion++;
+                                            if (arrCadena[posicion + 1] == '#') {
+                                                posicion++;
+                                                INCLUDE();
+                                                return true;
+                                            } else {
+                                                posicion++;
+                                                return true;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
 
     public int getPosicion() {
         return posicion;
