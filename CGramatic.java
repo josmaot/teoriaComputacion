@@ -10,6 +10,200 @@ public class CGramatic {
         posicion = 0;
     }
 
+    public boolean CODIGO() {
+        return true;
+    }
+
+    // TODO: Soportar espacios entre IF" "(CONDICION)" "BLOQUE" "ELSE" "BLOQUE
+    // ESTRUCTURA_IF->SECCION_IF | SECCION_IF ELSE BLOQUE
+    public boolean ESTRUCTURA_IF() {
+        boolean blnIf = false;
+        int p = posicion;
+
+        // If solo
+        if (SECCION_IF()) {
+            blnIf = true;
+        }
+
+        // If con else
+        if (blnIf) {
+            int pIf = posicion;
+            if (ELSE() && BLOQUE()) {
+                return true;
+            }
+            posicion = pIf;
+            return true;
+        }
+        posicion = p;
+
+        return false;
+    }
+
+    // SECCION_IF->IF(CONDICION)BLOQUE
+    public boolean SECCION_IF() {
+        int p = posicion;
+
+        // IF(CONDICION) BLOQUE
+        if (IF()) {
+            char cur = arrCadena[posicion++];
+            if (cur == '(') {
+                if (CONDICION()) {
+                    cur = arrCadena[posicion++];
+                    if (cur == ')') {
+                        if (BLOQUE()) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        posicion = p;
+
+        return false;
+    }
+
+    // BLOQUE->{CODIGO}
+    public boolean BLOQUE() {
+        int p = posicion;
+
+        // {CODIGO}
+        char cur = arrCadena[posicion++];
+        if (cur == '{') {
+            if (CODIGO()) {
+                cur = arrCadena[posicion++];
+                if (cur == '}') {
+                    return true;
+                }
+            }
+        }
+        posicion = p;
+
+        return false;
+    }
+
+    // IF-> if
+    public boolean IF() {
+        int p = posicion;
+
+        char cur = arrCadena[posicion++];
+        if (cur == 'i') {
+            cur = arrCadena[posicion++];
+            if (cur == 'f') {
+                return true;
+            }
+        }
+        posicion = p;
+
+        return false;
+    }
+
+    // ELSE-> else
+    public boolean ELSE() {
+        int p = posicion;
+
+        char cur = arrCadena[posicion++];
+        if (cur == 'e') {
+            cur = arrCadena[posicion++];
+            if (cur == 'l') {
+                cur = arrCadena[posicion++];
+                if (cur == 's') {
+                    cur = arrCadena[posicion++];
+                    if (cur == 'e') {
+                        return true;
+                    }
+                }
+            }
+        }
+        posicion = p;
+
+        return false;
+    }
+
+    // CONDICION-> VALOR COMPARADOR VALOR
+    public boolean CONDICION() {
+        int p = posicion;
+
+        // Condicion sin separadores "1>1"
+        if (VALOR() && COMPARADOR() && VALOR()) {
+            return true;
+        }
+        posicion = p;
+
+        // Condicion con separadores "1 > 1"
+        if (VALOR() && SEPARADOR() && COMPARADOR() && SEPARADOR() && VALOR()) {
+            return true;
+        }
+        posicion = p;
+
+        // Condicion separador izquierdo "1 >1"
+        if (VALOR() && SEPARADOR() && COMPARADOR() && VALOR()) {
+            return true;
+        }
+        posicion = p;
+
+        // Condicion separador derecho "1> 1"
+        if (VALOR() && COMPARADOR() && SEPARADOR() && VALOR()) {
+            return true;
+        }
+        posicion = p;
+
+        return false;
+    }
+
+    // COMPARADOR-> < | > | <= | >= | != | ==
+    public boolean COMPARADOR() {
+        int p = posicion;
+
+        // Evaluar >=
+        char cur = arrCadena[posicion++];
+        if (cur == '>') {
+            cur = arrCadena[posicion++];
+            if (cur == '=') {
+                return true;
+            }
+        }
+        posicion = p;
+
+        // Evaluar <=
+        cur = arrCadena[posicion++];
+        if (cur == '<') {
+            cur = arrCadena[posicion++];
+            if (cur == '=') {
+                return true;
+            }
+        }
+        posicion = p;
+
+        // Evaluar !=
+        cur = arrCadena[posicion++];
+        if (cur == '!') {
+            cur = arrCadena[posicion++];
+            if (cur == '=') {
+                return true;
+            }
+        }
+        posicion = p;
+
+        // Evaluar ==
+        cur = arrCadena[posicion++];
+        if (cur == '=') {
+            cur = arrCadena[posicion++];
+            if (cur == '=') {
+                return true;
+            }
+        }
+        posicion = p;
+
+        // Evaluar >
+        cur = arrCadena[posicion++];
+        if (cur == '>' || cur == '<') {
+            return true;
+        }
+        posicion = p;
+
+        return false;
+    }
+
     // DIGITOS-> DIGITO DIGITOS | DIGITO
     public boolean DIGITOS() {
         int p = posicion;
@@ -180,7 +374,7 @@ public class CGramatic {
         return false;
     }
 
-    // VALOR-> null | false | true | "CADENA" | NUMERO
+    // VALOR-> null | false | true | "CADENA" | NUMERO | CADENA
     public boolean VALOR() {
         int p = posicion;
 
@@ -235,7 +429,7 @@ public class CGramatic {
         }
         posicion = p;
 
-        // Evaluar cadena
+        // Evaluar "cadena"
         cur = arrCadena[posicion++];
         if (cur == '"') {
             if (CADENA()) {
@@ -247,8 +441,8 @@ public class CGramatic {
         }
         posicion = p;
 
-        // Evaluar numero
-        if (NUMERO()) {
+        // Evaluar numero y cadena
+        if (NUMERO() || CADENA()) {
             return true;
         }
         posicion = p;
