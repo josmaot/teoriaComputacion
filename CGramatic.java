@@ -14,24 +14,86 @@ public class CGramatic {
         return true;
     }
 
+    // ARGS-> ( ARG ) | ()
+    public boolean ARGS() {
+        int p = posicion;
+
+        // Evaluar sin argumentos
+        char cur = arrCadena[posicion++];
+        if (cur == '(' && SEPARADOR()) {
+            cur = arrCadena[posicion++];
+            if (cur == ')') {
+                return true;
+            }
+        }
+        posicion = p;
+
+        // Evaluar con argumentos
+        cur = arrCadena[posicion++];
+        if (cur == '(' && SEPARADOR() && ARG() && SEPARADOR()) {
+            cur = arrCadena[posicion++];
+            if (cur == ')') {
+                return true;
+            }
+        }
+        posicion = p;
+
+        return false;
+    }
+
+    // ARG-> VARIABLE | VARIABLE,ARG
+    public boolean ARG() {
+        int p = posicion;
+
+        // Evaluar varios argumentos
+        if (VARIABLE()) {
+            char cur = arrCadena[posicion++];
+            if (cur == ',' && SEPARADOR() && ARG()) {
+                return true;
+            }
+        }
+        posicion = p;
+
+        // Evaluar argumento simple
+        if (VARIABLE()) {
+            return true;
+        }
+        posicion = p;
+
+        return false;
+    }
+
+    // ASIGNAR_VALOR-> CADENA = VALOR
+    public boolean ASIGNAR_VALOR() {
+        int p = posicion;
+
+        // CADENA = VALOR
+        if (CADENA() && SEPARADOR()) {
+            char cur = arrCadena[posicion++];
+            if (cur == '=') {
+                if (SEPARADOR() && VALOR()) {
+                    return true;
+                }
+            }
+        }
+        posicion = p;
+
+        return false;
+    }
+
     // TODO: Soportar espacios entre IF" "(CONDICION)" "BLOQUE" "ELSE" "BLOQUE
     // ESTRUCTURA_IF->SECCION_IF | SECCION_IF ELSE BLOQUE
     public boolean ESTRUCTURA_IF() {
-        boolean blnIf = false;
         int p = posicion;
+
+        // If con else
+        if (SECCION_IF() && ELSE() && BLOQUE()) {
+            return true;
+        }
+        posicion = p;
 
         // If solo
         if (SECCION_IF()) {
-            blnIf = true;
-        }
-
-        // If con else
-        if (blnIf) {
-            int pIf = posicion;
-            if (ELSE() && BLOQUE()) {
-                return true;
-            }
-            posicion = pIf;
             return true;
         }
         posicion = p;
@@ -44,13 +106,13 @@ public class CGramatic {
         int p = posicion;
 
         // IF(CONDICION) BLOQUE
-        if (IF()) {
+        if (IF() && SEPARADOR()) {
             char cur = arrCadena[posicion++];
             if (cur == '(') {
                 if (CONDICION()) {
                     cur = arrCadena[posicion++];
                     if (cur == ')') {
-                        if (BLOQUE()) {
+                        if (SEPARADOR() && BLOQUE()) {
                             return true;
                         }
                     }
@@ -314,7 +376,7 @@ public class CGramatic {
         }
         posicion = p;
 
-        return false;
+        return true;
     }
 
     // FRACCION-> .DIGITOS
@@ -521,45 +583,29 @@ public class CGramatic {
         return false;
     }
 
-    // VARIABLE-> TIPO_DATO SEPARADOR CADENA ; | TIPO_DATO SEPARADOR CADENA = VALOR ;
+    // VARIABLE-> TIPO_DATO SEPARADOR CADENA | TIPO_DATO SEPARADOR CADENA SEPARADOR = SEPARADOR VALOR
     public boolean VARIABLE() {
         int p = posicion;
 
-        // Evaluar variable sencilla
-        if (TIPO_DATO()) {
-            if (SEPARADOR()) {
-                if (CADENA()) {
-                    char cur = arrCadena[posicion++];
-                    if (cur == ';') {
-                        return true;
-                    }
-                }
+        // TIPO_DATO SEPARADOR CADENA SEPARADOR = SEPARADOR VALOR
+        if (TIPO_DATO() && SEPARADOR() && CADENA() && SEPARADOR()) {
+            char cur = arrCadena[posicion++];
+            if (cur == '=' && SEPARADOR() && VALOR()) {
+                return true;
             }
         }
         posicion = p;
 
-        // TIPO_DATO SEPARADOR CADENA = VALOR ;
-        // Evaluar variable con asignacion
-        if (TIPO_DATO()) {
-            if (SEPARADOR()) {
-                if (CADENA()) {
-                    char cur = arrCadena[posicion++];
-                    if (cur == '=') {
-                        if (VALOR()) {
-                            cur = arrCadena[posicion++];
-                            if (cur == ';') {
-                                return true;
-                            }
-                        }
-                    }
-                }
-            }
+        // TIPO_DATO SEPARADOR CADENA
+        if (TIPO_DATO() && SEPARADOR() && CADENA()) {
+            return true;
         }
         posicion = p;
 
         return false;
     }
-      //MODULE_NOMBRE-> CADENA .h
+    
+    //MODULE_NOMBRE-> CADENA .h
     public boolean MODULE_NOMBRE() {
 
         String[] libs = {"assert\0", "complex\0", "ctype\0", "errno\0", "fenv\0", "float\0",
@@ -592,7 +638,6 @@ public class CGramatic {
     
     //MODULE-> < MODULE_NOMBRE.h >
     public boolean MODULE() {
-
         if (arrCadena[posicion] == '<') {
             posicion++;
             if (MODULE_NOMBRE()) {
@@ -605,16 +650,13 @@ public class CGramatic {
                         }
                     }
                 }
-
             }
         }
 
         return false;
-
     }
     //INCLUDE-> #include MODULE | #include MODULE SEPARADOR INCLUDE | EMPTY
     public boolean INCLUDE() {
-
         if (arrCadena[posicion] == '#') {
             posicion++;
             if (arrCadena[posicion] == 'i') {
