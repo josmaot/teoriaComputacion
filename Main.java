@@ -26,7 +26,7 @@ public class Main {
         gram.setCadena(cadena);
 
         // Evaluar gramatica
-        boolean res = gram.ESTRUCTURA_IF();
+        boolean res = gram.INCLUDE();
 
         // Imprimir resultado
         System.out.println("Tu cadena es: " + gram.getStatusCadena(res) + "\n");
