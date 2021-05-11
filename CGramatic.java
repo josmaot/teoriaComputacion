@@ -10,8 +10,100 @@ public class CGramatic {
         posicion = 0;
     }
 
+    // CODIGO-> INSTRUCCION CODIGO | ESTRUCTURA_IF CODIGO | SEPARADOR
     public boolean CODIGO() {
+        int p = posicion;
+
+        // INSTRUCCION CODIGO
+        if (SEPARADOR() && (INSTRUCCION() || ESTRUCTURA_IF())) {
+            if (CODIGO()) {
+                return true;
+            }
+        }
+        posicion = p;
+
         return SEPARADOR();
+    }
+
+    // INSTRUCCION-> VARIABLE; | ASIGNAR_VALOR; | LLAMAR_METODO; | return SEPARADOR VALOR;
+    public boolean INSTRUCCION() {
+        int p = posicion;
+
+        // VARIABLE;
+        if (VARIABLE()) {
+            char cur = arrCadena[posicion++];
+            if (cur == ';') {
+                return true;
+            }
+        }
+        posicion = p;
+
+        // ASIGNAR_VALOR;
+        if (ASIGNAR_VALOR()) {
+            char cur = arrCadena[posicion++];
+            if (cur == ';') {
+                return true;
+            }
+        }
+        posicion = p;
+
+        // LLAMAR_METODO;
+        if (LLAMAR_METODO()) {
+            char cur = arrCadena[posicion++];
+            if (cur == ';') {
+                return true;
+            }
+        }
+        posicion = p;
+
+        // return SEPARADOR VALOR;
+        char cur = arrCadena[posicion++];
+        if (cur == 'r') {
+            cur = arrCadena[posicion++];
+            if (cur == 'e') {
+                cur = arrCadena[posicion++];
+                if (cur == 't') {
+                    cur = arrCadena[posicion++];
+                    if (cur == 'u') {
+                        cur = arrCadena[posicion++];
+                        if (cur == 'r') {
+                            cur = arrCadena[posicion++];
+                            if (cur == 'n' && SEPARADOR() && VALOR()) {
+                                cur = arrCadena[posicion++];
+                                if (cur == ';') {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        posicion = p;
+
+        return false;
+    }
+
+    // LLAMAR_METODO-> CADENA ARGS | CADENA . CADENA ARGS
+    public boolean LLAMAR_METODO() {
+        int p = posicion;
+
+        // ADENA ARGS
+        if (CADENA() && ARGS()) {
+            return true;
+        }
+        posicion = p;
+
+        // CADENA . CADENA ARGS
+        if (CADENA()) {
+            char cur = arrCadena[posicion++];
+            if (cur == '.' && CADENA() && ARGS()) {
+                return true;
+            }
+        }
+        posicion = p;
+
+        return false;
     }
 
     // ARGS-> ( ARG ) | ()
@@ -604,7 +696,7 @@ public class CGramatic {
 
         return false;
     }
-    
+
     //MODULE_NOMBRE-> CADENA .h
     public boolean MODULE_NOMBRE() {
 
@@ -635,7 +727,7 @@ public class CGramatic {
 
         return false;
     }
-    
+
     //MODULE-> < MODULE_NOMBRE.h >
     public boolean MODULE() {
         if (arrCadena[posicion] == '<') {
@@ -655,7 +747,7 @@ public class CGramatic {
 
         return false;
     }
-    
+
     //INCLUDE-> #include MODULE | #include MODULE SEPARADOR INCLUDE | EMPTY
     public boolean INCLUDE() {
         if (arrCadena[posicion] == '#') {
@@ -677,15 +769,16 @@ public class CGramatic {
                                         if (MODULE()) {
                                             posicion++;
                                             if (arrCadena[posicion + 1] == '#') {
-                                                if(arrCadena[posicion] == ';'){
+                                                if (arrCadena[posicion] == ';') {
                                                     posicion++;
                                                     INCLUDE();
                                                     return true;
-                                                }else
+                                                } else {
                                                     return false;
-                                                
+                                                }
+
                                             } else {
-                                                if(arrCadena[posicion] == ';'){
+                                                if (arrCadena[posicion] == ';') {
                                                     posicion++;
                                                     return true;
                                                 }
