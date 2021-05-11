@@ -11,7 +11,7 @@ public class CGramatic {
     }
 
     public boolean CODIGO() {
-        return true;
+        return SEPARADOR();
     }
 
     // ARGS-> ( ARG ) | ()
@@ -87,7 +87,7 @@ public class CGramatic {
         int p = posicion;
 
         // If con else
-        if (SECCION_IF() && ELSE() && BLOQUE()) {
+        if (SECCION_IF() && SEPARADOR() && ELSE() && SEPARADOR() && BLOQUE()) {
             return true;
         }
         posicion = p;
