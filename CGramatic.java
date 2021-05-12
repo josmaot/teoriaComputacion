@@ -426,7 +426,7 @@ public class CGramatic {
     public boolean CARACTER() {
         int p = posicion;
         boolean found = false;
-        char[] caracteres = {
+        char[] caracteres = { '"', '"', ' ',
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
             'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
             'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
@@ -671,7 +671,7 @@ public class CGramatic {
             }
         }
         posicion = p;
-        
+
         // Evaluar void
         cur = arrCadena[posicion++];
         if (cur == 'v') {
@@ -688,6 +688,27 @@ public class CGramatic {
         }
         posicion = p;
 
+        // Evaluar void
+        cur = arrCadena[posicion++];
+        if (cur == 's') {
+            cur = arrCadena[posicion++];
+            if (cur == 't') {
+                cur = arrCadena[posicion++];
+                if (cur == 'r') {
+                    cur = arrCadena[posicion++];
+                    if (cur == 'i') {
+                        cur = arrCadena[posicion++];
+                        if (cur == 'n') {
+                            cur = arrCadena[posicion++];
+                            if (cur == 'g') {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        posicion = p;
         return false;
     }
 
@@ -784,9 +805,10 @@ public class CGramatic {
                                         posicion++;
                                         if (MODULE()) {
                                             posicion++;
-                                            if(posicion < getCadena().length() - 1 && (arrCadena[posicion] == '#' || arrCadena[posicion] == '\n')){
-                                                if(arrCadena[posicion] == '\n')
+                                            if (posicion < getCadena().length() - 1 && (arrCadena[posicion] == '#' || arrCadena[posicion] == '\n')) {
+                                                if (arrCadena[posicion] == '\n') {
                                                     posicion++;
+                                                }
                                                 INCLUDE();
                                                 return true;
 
@@ -805,13 +827,13 @@ public class CGramatic {
 
         return false;
     }
-    
+
     //METODO_ENCABEZADO-> TYPE SEPARADOR CADENA ARGS
-    public boolean METODO_ENCABEZADO(){
-        if(TIPO_DATO()){
-            if(SEPARADOR()){
-                if(CADENA()){
-                    if(ARGS()){
+    public boolean METODO_ENCABEZADO() {
+        if (TIPO_DATO()) {
+            if (SEPARADOR()) {
+                if (CADENA()) {
+                    if (ARGS()) {
                         return true;
                     }
                 }
@@ -819,43 +841,60 @@ public class CGramatic {
         }
         return false;
     }
-    
+
     //DEFINICION-> METODO_ENCABEZADO;
-    public boolean DEFINICION(){
-        if(METODO_ENCABEZADO()){
-            if(arrCadena[posicion] == ';'){
-                posicion++;
+    public boolean DEFINICION() {
+        int p = posicion;
+        if (METODO_ENCABEZADO()) {
+            if (arrCadena[posicion] == ';') {
+                p = posicion;
+                if (SEPARADOR()) {
+                    posicion++;
+                    if (DEFINICION()) {
+                        return true;
+                    }
+                } else {
+                    posicion++;
+                    return true;
+                }
+            } else if (arrCadena[posicion] == '{') {
+                posicion = p;
                 return true;
             }
         }
         return false;
     }
-    
+
     //METODO-> METODO_ENCABEZADO BLOQUE
-    public boolean METODO(){
-        if(METODO_ENCABEZADO()){
-            if(BLOQUE()){
+    public boolean METODO() {
+        if (METODO_ENCABEZADO()) {
+            if (BLOQUE()) {
                 return true;
             }
         }
         return false;
     }
-    
+
     //METODOS-> METODO | EMPTY
-    public boolean METODOS(){
-        if(METODO()){
-            return true;
+    public boolean METODOS() {
+        if (METODO()) {
+            if (posicion < getCadena().length() - 1) {
+                METODOS();
+                return true;
+            } else {
+                return true;
+            }
         }
         return false;
     }
-    
+
     //CONTENIDO->INCLUDE SEPARADOR DEFINITION SEPARADOR METODOS
-    public boolean CONTENIDO(){
-        if(INCLUDE()){
-            if(SEPARADOR()){
-                if(DEFINICION()){
-                    if(SEPARADOR()){
-                        if(METODOS()){
+    public boolean CONTENIDO() {
+        if (INCLUDE()) {
+            if (SEPARADOR()) {
+                if (DEFINICION()) {
+                    if (SEPARADOR()) {
+                        if (METODOS()) {
                             return true;
                         }
                     }
@@ -864,9 +903,9 @@ public class CGramatic {
         }
         return false;
     }
-    
-    public boolean GRAMATICA_C(){
-        if(CONTENIDO()){
+
+    public boolean GRAMATICA_C() {
+        if (CONTENIDO()) {
             return true;
         }
         return false;
