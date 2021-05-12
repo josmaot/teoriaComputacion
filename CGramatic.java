@@ -671,6 +671,22 @@ public class CGramatic {
             }
         }
         posicion = p;
+        
+        // Evaluar void
+        cur = arrCadena[posicion++];
+        if (cur == 'v') {
+            cur = arrCadena[posicion++];
+            if (cur == 'o') {
+                cur = arrCadena[posicion++];
+                if (cur == 'i') {
+                    cur = arrCadena[posicion++];
+                    if (cur == 'd') {
+                        return true;
+                    }
+                }
+            }
+        }
+        posicion = p;
 
         return false;
     }
@@ -768,20 +784,14 @@ public class CGramatic {
                                         posicion++;
                                         if (MODULE()) {
                                             posicion++;
-                                            if (arrCadena[posicion + 1] == '#') {
-                                                if (arrCadena[posicion] == ';') {
+                                            if(posicion < getCadena().length() - 1 && (arrCadena[posicion] == '#' || arrCadena[posicion] == '\n')){
+                                                if(arrCadena[posicion] == '\n')
                                                     posicion++;
-                                                    INCLUDE();
-                                                    return true;
-                                                } else {
-                                                    return false;
-                                                }
+                                                INCLUDE();
+                                                return true;
 
                                             } else {
-                                                if (arrCadena[posicion] == ';') {
-                                                    posicion++;
-                                                    return true;
-                                                }
+                                                return true;
                                             }
                                         }
                                     }
@@ -793,6 +803,72 @@ public class CGramatic {
             }
         }
 
+        return false;
+    }
+    
+    //METODO_ENCABEZADO-> TYPE SEPARADOR CADENA ARGS
+    public boolean METODO_ENCABEZADO(){
+        if(TIPO_DATO()){
+            if(SEPARADOR()){
+                if(CADENA()){
+                    if(ARGS()){
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    
+    //DEFINICION-> METODO_ENCABEZADO;
+    public boolean DEFINICION(){
+        if(METODO_ENCABEZADO()){
+            if(arrCadena[posicion] == ';'){
+                posicion++;
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    //METODO-> METODO_ENCABEZADO BLOQUE
+    public boolean METODO(){
+        if(METODO_ENCABEZADO()){
+            if(BLOQUE()){
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    //METODOS-> METODO | EMPTY
+    public boolean METODOS(){
+        if(METODO()){
+            return true;
+        }
+        return false;
+    }
+    
+    //CONTENIDO->INCLUDE SEPARADOR DEFINITION SEPARADOR METODOS
+    public boolean CONTENIDO(){
+        if(INCLUDE()){
+            if(SEPARADOR()){
+                if(DEFINICION()){
+                    if(SEPARADOR()){
+                        if(METODOS()){
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    
+    public boolean GRAMATICA_C(){
+        if(CONTENIDO()){
+            return true;
+        }
         return false;
     }
 
