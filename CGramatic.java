@@ -10,12 +10,12 @@ public class CGramatic {
         posicion = 0;
     }
 
-    // CODIGO-> INSTRUCCION CODIGO | ESTRUCTURA_IF CODIGO | SEPARADOR
+    // CODIGO-> INSTRUCCION CODIGO | ESTRUCTURA_IF CODIGO | ESTRUCTURA_IF CODIGO | ESTRUCTURA_WHILE CODIGO | SEPARADOR
     public boolean CODIGO() {
         int p = posicion;
 
         // INSTRUCCION CODIGO
-        if (SEPARADOR() && (INSTRUCCION() || ESTRUCTURA_IF())) {
+        if (SEPARADOR() && (INSTRUCCION() || ESTRUCTURA_IF() || ESTRUCTURA_WHILE())) {
             if (CODIGO()) {
                 return true;
             }
@@ -25,8 +25,44 @@ public class CGramatic {
         return SEPARADOR();
     }
 
-    // INSTRUCCION-> VARIABLE; | ASIGNAR_VALOR; | LLAMAR_METODO; | return SEPARADOR VALOR;
+    public boolean FUNCIONES_RESERVADAS() {
+        String[] functions = {"printf\0", "scanf\0", "puts\0"};
+        int entro = 0;
+
+        for (String foo : functions) {
+            for (char letra : foo.toCharArray()) {
+                if (letra == '\0') {
+                    return true;
+                }
+                if (letra == arrCadena[posicion]) {
+                    entro++;
+                    posicion++;
+                } else {
+                    if (entro > 0) {
+                        posicion = posicion - entro;
+                        entro = 0;
+                    }
+                    break;
+                }
+            }
+
+        }
+
+        return false;
+    }
+
+    // INSTRUCCION-> VARIABLE; | ASIGNAR_VALOR; | LLAMAR_METODO; | FUNCIONES_RESERVADAS; | return SEPARADOR VALOR;
     public boolean INSTRUCCION() {
+
+        if (FUNCIONES_RESERVADAS()) {//Revisa algunas funciones basicas 
+            if (ARGS()) {
+                if (arrCadena[posicion] == ';') {
+                    posicion++;
+                    return true;
+                }
+            }
+        }
+
         int p = posicion;
 
         // VARIABLE;
@@ -122,7 +158,7 @@ public class CGramatic {
 
         // Evaluar con argumentos
         cur = arrCadena[posicion++];
-        if (cur == '(' && SEPARADOR() && ARG() && SEPARADOR()) {
+        if (cur == '(' && SEPARADOR() && ARG()) {
             cur = arrCadena[posicion++];
             if (cur == ')') {
                 return true;
@@ -148,6 +184,21 @@ public class CGramatic {
 
         // Evaluar argumento simple
         if (VARIABLE()) {
+            return true;
+        }
+        posicion = p;
+
+        // Evaluar varios sin tipo de dato o digitos
+        if (CADENA()) {
+            char cur = arrCadena[posicion++];
+            if (cur == ',' && SEPARADOR() && ARG()) {
+                return true;
+            }
+        }
+        posicion = p;
+
+        // Evaluar argumento simple sin tipo de dato o digito
+        if (CADENA()) {
             return true;
         }
         posicion = p;
@@ -193,12 +244,47 @@ public class CGramatic {
         return false;
     }
 
+    // ESTRUCTURA_WHILE->SECCION_WHILE BLOQUE 
+    public boolean ESTRUCTURA_WHILE() {
+        int p = posicion;
+
+        // while
+        if (SECCION_WHILE()) {
+            return true;
+        }
+        posicion = p;
+
+        return false;
+    }
+
     // SECCION_IF->IF(CONDICION)BLOQUE
     public boolean SECCION_IF() {
         int p = posicion;
 
         // IF(CONDICION) BLOQUE
         if (IF() && SEPARADOR()) {
+            char cur = arrCadena[posicion++];
+            if (cur == '(') {
+                if (CONDICION()) {
+                    cur = arrCadena[posicion++];
+                    if (cur == ')') {
+                        if (SEPARADOR() && BLOQUE()) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        posicion = p;
+
+        return false;
+    }
+
+    // SECCION_WHILE->WHILE(CONDICION) BLOQUE
+    public boolean SECCION_WHILE() {
+        int p = posicion;
+        // while(CONDICION) BLOQUE
+        if (WHILE() && SEPARADOR()) {
             char cur = arrCadena[posicion++];
             if (cur == '(') {
                 if (CONDICION()) {
@@ -244,6 +330,30 @@ public class CGramatic {
             cur = arrCadena[posicion++];
             if (cur == 'f') {
                 return true;
+            }
+        }
+        posicion = p;
+
+        return false;
+    }
+
+    public boolean WHILE() {
+        int p = posicion;
+        char cur = arrCadena[posicion++];
+
+        if (cur == 'w') {
+            cur = arrCadena[posicion++];
+            if (cur == 'h') {
+                cur = arrCadena[posicion++];
+                if (cur == 'i') {
+                    cur = arrCadena[posicion++];
+                    if (cur == 'l') {
+                        cur = arrCadena[posicion++];
+                        if (cur == 'e') {
+                            return true;
+                        }
+                    }
+                }
             }
         }
         posicion = p;
@@ -404,7 +514,6 @@ public class CGramatic {
     // CADENA-> CARACTER CADENA | CARACTER
     public boolean CADENA() {
         int p = posicion;
-
         // Evaluar cadena continuo
         if (CARACTER()) {
             if (CADENA()) {
@@ -417,8 +526,11 @@ public class CGramatic {
         if (CARACTER()) {
             return true;
         }
-        posicion = p;
-
+        if (!(arrCadena[posicion] == '"')) {
+            posicion = p;
+        } else {
+            return true;
+        }
         return false;
     }
 
@@ -426,7 +538,7 @@ public class CGramatic {
     public boolean CARACTER() {
         int p = posicion;
         boolean found = false;
-        char[] caracteres = { '"', '"', ' ',
+        char[] caracteres = {' ', '"', '&', '%', ':', '*', '+',
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
             'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
             'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
@@ -785,48 +897,7 @@ public class CGramatic {
         return false;
     }
 
-    //INCLUDE-> #include MODULE | #include MODULE SEPARADOR INCLUDE | EMPTY
-    public boolean INCLUDE() {
-        if (arrCadena[posicion] == '#') {
-            posicion++;
-            if (arrCadena[posicion] == 'i') {
-                posicion++;
-                if (arrCadena[posicion] == 'n') {
-                    posicion++;
-                    if (arrCadena[posicion] == 'c') {
-                        posicion++;
-                        if (arrCadena[posicion] == 'l') {
-                            posicion++;
-                            if (arrCadena[posicion] == 'u') {
-                                posicion++;
-                                if (arrCadena[posicion] == 'd') {
-                                    posicion++;
-                                    if (arrCadena[posicion] == 'e') {
-                                        posicion++;
-                                        if (MODULE()) {
-                                            posicion++;
-                                            if (posicion < getCadena().length() - 1 && (arrCadena[posicion] == '#' || arrCadena[posicion] == '\n')) {
-                                                if (arrCadena[posicion] == '\n') {
-                                                    posicion++;
-                                                }
-                                                INCLUDE();
-                                                return true;
-
-                                            } else {
-                                                return true;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
+    
 
     //METODO_ENCABEZADO-> TYPE SEPARADOR CADENA ARGS
     public boolean METODO_ENCABEZADO() {
@@ -887,6 +958,50 @@ public class CGramatic {
         }
         return false;
     }
+    
+    //INCLUDE-> #include MODULE | #include MODULE SEPARADOR INCLUDE | EMPTY
+    public boolean INCLUDE() {
+        if (arrCadena[posicion] == '#') {
+            posicion++;
+            if (arrCadena[posicion] == 'i') {
+                posicion++;
+                if (arrCadena[posicion] == 'n') {
+                    posicion++;
+                    if (arrCadena[posicion] == 'c') {
+                        posicion++;
+                        if (arrCadena[posicion] == 'l') {
+                            posicion++;
+                            if (arrCadena[posicion] == 'u') {
+                                posicion++;
+                                if (arrCadena[posicion] == 'd') {
+                                    posicion++;
+                                    if (arrCadena[posicion] == 'e') {
+                                        posicion++;
+                                        if (MODULE()) {
+                                            posicion++;
+                                            if (posicion < getCadena().length() - 1 && (arrCadena[posicion] == '#' || arrCadena[posicion] == '\n')) {
+                                                if (arrCadena[posicion] == '\n') {
+                                                    posicion++;
+                                                }
+                                                INCLUDE();
+                                                return true;
+
+                                            } else {
+                                                return true;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
 
     //CONTENIDO->INCLUDE SEPARADOR DEFINITION SEPARADOR METODOS
     public boolean CONTENIDO() {
@@ -898,6 +1013,9 @@ public class CGramatic {
                             return true;
                         }
                     }
+                } else //Si no hay definicion de funciones
+                if (METODOS()) { //Verifica los metodos
+                    return true;
                 }
             }
         }
