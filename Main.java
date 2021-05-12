@@ -9,16 +9,16 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Main {
+
     public static void main(String args[]) {
         menu();
     }
 
     public static void menu() {
-
         Scanner in = new Scanner(System.in);
         while (true) {
             System.out.println("*-*-*-*-*-*-*-*-*-*-*-* PROYECTO TERCER PARCIAL *-*-*-*-*-*-*-*-*-*-*-*\n");
-            System.out.println(___________________________________________________________________________);
+            System.out.println("___________________________________________________________________________");
             System.out.println("OPCIONES\n");
             System.out.println("1)Informacion del proyecto\n");
             System.out.println("2)Comprobar Cadena\n");
@@ -74,11 +74,9 @@ public class Main {
                 System.out.println("Tu cadena es: " + gram.getStatusCadena(res) + "\n");
 
                 break;
-
             case "3":
                 System.exit(0);
                 break;
-
         }
     }
 }
