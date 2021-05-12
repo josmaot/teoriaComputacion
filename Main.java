@@ -1,22 +1,17 @@
 package ppal;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
-
-import java.util.Arrays;
-import java.util.List;
 import java.util.Scanner;
 
 public class Main {
-
     public static void main(String args[]) {
         menu();
     }
 
     public static void menu() {
+
         Scanner in = new Scanner(System.in);
-        while (true) {
+        int opc=0;
+        while (opc!=3) {
             System.out.println("*-*-*-*-*-*-*-*-*-*-*-* PROYECTO TERCER PARCIAL *-*-*-*-*-*-*-*-*-*-*-*\n");
             System.out.println("___________________________________________________________________________");
             System.out.println("OPCIONES\n");
@@ -27,6 +22,7 @@ public class Main {
             String opcionmenu = in.nextLine();
 
             opciones(opcionmenu);
+            opc =  Integer.parseInt(opcionmenu);
         }
 
     }
@@ -52,7 +48,7 @@ public class Main {
                 break;
 
             case "2":
-                System.out.println("Cadena a evaluar:");
+                System.out.println("Codigo a evaluar:");
                 System.out.println("---------------------------------------------------------------------");
                 Scanner scanner = new Scanner(Main.class.getResourceAsStream("Codigo.txt"));
                 String cadena = new String();
@@ -68,12 +64,13 @@ public class Main {
                 gram.setCadena(cadena);
 
                 // Evaluar gramatica
-                boolean res = gram.CODIGO();
+                boolean res = gram.GRAMATICA_C();
 
                 // Imprimir resultado
-                System.out.println("Tu cadena es: " + gram.getStatusCadena(res) + "\n");
+                System.out.println("Tu codigo es: " + gram.getStatusCadena(res) + "\n");
 
                 break;
+
             case "3":
                 System.exit(0);
                 break;
