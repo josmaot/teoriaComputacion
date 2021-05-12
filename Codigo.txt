@@ -1,6 +1,25 @@
-if (x > 0) {
-    x = -1;
-} else {
-    x = 10;
+#include<math.h>
+#include<stdio.h>
+
+string menorDeEdad();
+string mayorDeEdad();
+
+int main(){
+ 
+ int edad=18;
+ 
+ if(edad<18) {
+    menorDeEdad();
+ } else {
+    mayorDeEdad();
+ }
+
 }
-return true;
+
+string menorDeEdad(){
+ return "Menor de edad";
+}
+
+string mayorDeEdad(){
+ return "Mayor de edad";
+}
