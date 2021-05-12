@@ -1,0 +1,23 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+int main(){
+    int base;
+    int exponente;
+    int resultado=1;
+    int i=1;
+    
+    printf("Introduce un nuero base: ");
+    scanf("%d", &base);
+    puts("");
+    printf("Introduzca un ncmero de exponente: ");
+    scanf("%d", &exponente);
+    puts("");
+    
+    while(i<=exponente){
+        resultado=resultado*base;
+        i=i+1;
+    }
+
+    printf("El resultado de multiplicar %d por si mismo %d veces es igual a: %d", base,exponente, resultado);
+}

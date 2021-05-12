@@ -1,0 +1,15 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+int main(){
+    int num;
+    int i=1;
+    
+    printf("Introduce un numero");
+    scanf("%d", &num);
+
+    printf("Los numeros del 1 al %d", &num);
+    while(i<=20) {
+        printf("%d", i);
+    }
+}
